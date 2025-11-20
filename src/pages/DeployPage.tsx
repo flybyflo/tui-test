@@ -38,7 +38,7 @@ export function DeployPage() {
   );
 }
 
-const MULTISTEP_STEPS = ["Step 1", "Step 2", "Step 3"];
+const MULTISTEP_STEPS = ["Step 1", "Step 2", "Step 3", "Step 4"];
 
 function MultiStepSetup({ accent, activeStep }: { accent: string; activeStep: number }) {
   return (
@@ -76,7 +76,7 @@ function MultiStepSetup({ accent, activeStep }: { accent: string; activeStep: nu
   );
 }
 
-const STEP_CONTENT = ["Step 1", "Step 2", "Step 3"];
+const STEP_CONTENT = ["Step 1", "Step 2", "Step 3", "Step 4"];
 
 function StepContent({
   activeStep,
@@ -106,6 +106,10 @@ function StepContent({
 
   if (activeStep === 2) {
     return <StepThreeJson accent={accent} />;
+  }
+
+  if (activeStep === 3) {
+    return <StepFourOverview selection={selection} accent={accent} />;
   }
 
   return (
@@ -275,6 +279,42 @@ function StepTwoSummary({ selection, accent }: { selection: DeploySelection; acc
       {entries.map(({ component, version }) => (
         <text key={component} content={`${component}: ${version ?? "Not selected"}`} style={{ marginTop: 1 }} />
       ))}
+    </box>
+  );
+}
+
+function StepFourOverview({ selection, accent }: { selection: DeploySelection; accent: string }) {
+  const selectedCount = Object.values(selection).filter((v) => v !== null).length;
+  const totalCount = SOFTWARE_COMPONENTS.length;
+  const allSelected = selectedCount === totalCount;
+
+  return (
+    <box style={{ padding: 2, marginTop: 1, border: true, borderColor: "#1c2028", backgroundColor: "#0b0d12", flexDirection: "column", height: 15 }}>
+      <text content="Deployment Overview" attributes={TextAttributes.BOLD} fg={accent} />
+      <text content={`Ready to deploy ${selectedCount} of ${totalCount} components`} style={{ marginTop: 1 }} />
+      
+      <box style={{ marginTop: 2, flexDirection: "column" }}>
+        <text content="Selected Components:" attributes={TextAttributes.BOLD} style={{ marginBottom: 0.5 }} />
+        {SOFTWARE_COMPONENTS.map((component) => {
+          const version = selection[component];
+          return (
+            <text
+              key={component}
+              content={`  ${version ? "✓" : "✗"} ${component}: ${version ?? "Not selected"}`}
+              fg={version ? "#50fa7b" : "#ff5555"}
+              style={{ marginTop: 0.3 }}
+            />
+          );
+        })}
+      </box>
+
+      <box style={{ marginTop: 2, border: true, borderColor: allSelected ? accent : "#424651", padding: 1 }}>
+        <text
+          content={allSelected ? "✓ All components ready for deployment" : "⚠ Some components not selected"}
+          attributes={TextAttributes.BOLD}
+          fg={allSelected ? "#50fa7b" : "#ffb86c"}
+        />
+      </box>
     </box>
   );
 }
